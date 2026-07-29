@@ -1,0 +1,32 @@
+.product-skeleton {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.product-skeleton-media {
+  aspect-ratio: 4 / 3;
+  border-radius: 0;
+}
+
+.product-skeleton-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.product-skeleton-line {
+  height: 14px;
+}
+
+.product-skeleton-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.product-skeleton-btn {
+  height: 38px;
+  flex: 1;
+}

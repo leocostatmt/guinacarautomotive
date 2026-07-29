@@ -1,0 +1,29 @@
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--gray);
+  margin-bottom: 24px;
+}
+
+.breadcrumb a:hover {
+  color: var(--white);
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.breadcrumb-sep {
+  font-size: 0.6rem;
+  color: var(--gray-dim);
+}
+
+.breadcrumb-item span {
+  color: var(--white);
+}

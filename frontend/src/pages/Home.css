@@ -1,0 +1,84 @@
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(ellipse at top right, #1c1c1f 0%, var(--bg) 60%);
+  border-bottom: 1px solid var(--line);
+  padding: 100px 0 90px;
+}
+
+.hero-stripe {
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 60%;
+  height: 180%;
+  background: repeating-linear-gradient(
+    115deg,
+    var(--red) 0 3px,
+    transparent 3px 26px
+  );
+  opacity: 0.35;
+  transform: rotate(0deg);
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  max-width: 720px;
+}
+
+.hero-title {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1.12;
+  margin: 14px 0 18px;
+}
+
+.hero-subtitle {
+  color: var(--gray);
+  font-size: 1.05rem;
+  max-width: 520px;
+  margin-bottom: 32px;
+}
+
+.hero-cta {
+  font-size: 1rem;
+  padding: 15px 34px;
+}
+
+.highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.highlight-card {
+  padding: 26px 22px;
+  text-align: left;
+}
+
+.highlight-icon {
+  color: var(--red);
+  font-size: 1.6rem;
+  margin-bottom: 14px;
+}
+
+.highlight-title {
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+}
+
+.highlight-card p {
+  color: var(--gray);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .highlights-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 560px) {
+  .hero { padding: 76px 0 56px; }
+  .highlights-grid { grid-template-columns: 1fr; }
+}

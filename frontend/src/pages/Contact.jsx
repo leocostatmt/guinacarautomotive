@@ -5,8 +5,8 @@ import Breadcrumb from '../components/Breadcrumb'
 import './Contact.css'
 
 const faqs = [
-  { q: 'Qual o prazo de entrega?', a: 'O prazo médio é de 2 a 7 dias úteis, dependendo da sua região.' },
-  { q: 'As peças possuem garantia?', a: 'Sim, todas as peças possuem garantia de fábrica de no mínimo 6 meses.' },
+  { q: 'Qual o prazo de entrega?', a: 'O prazo médio é de 2 a 7 dias úteis a partir da confirmação do pagamento, dependendo da sua região.' },
+  { q: 'As peças possuem garantia?', a: 'Sim, todas as peças possuem garantia de no mínimo 3 meses' },
   { q: 'Posso trocar uma peça comprada?', a: 'Sim, você tem até 7 dias corridos após o recebimento para solicitar a troca.' },
   { q: 'Vocês entregam em todo o Brasil?', a: 'Sim, realizamos entregas para todos os estados brasileiros.' },
 ]
@@ -41,10 +41,10 @@ export default function Contact() {
           <div className="contact-info panel">
             <h3>Informações de contato</h3>
             <ul>
-              <li><FaPhoneAlt /> (11) 4002-8922</li>
-              <li><FaWhatsapp /> (11) 99999-9999</li>
-              <li><FaEnvelope /> contato@guinacar.com.br</li>
-              <li><FaMapMarkerAlt /> Av. das Autopeças, 1234 — São Paulo/SP</li>
+              <li><FaPhoneAlt /> (11) 99820-9388</li>
+              <li><FaWhatsapp /> (11) 99815-8461</li>
+              <li><FaEnvelope /> guinacarautomotive@guinacar.com.br</li>
+              <li><FaMapMarkerAlt /> Rua Iguape, 7, Jardim Maria Helena - Barueri/SP</li>
             </ul>
           </div>
 

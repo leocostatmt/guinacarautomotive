@@ -34,7 +34,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
           >
-            <span className="eyebrow">GuinaCar Autopeças</span>
+            <span className="eyebrow">Guinacar Autopeças</span>
             <h1 className="hero-title">
               Encontre as melhores peças automotivas com qualidade garantida.
             </h1>

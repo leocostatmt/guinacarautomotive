@@ -2,20 +2,22 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { motion } from 'framer-motion'
+import { useAuth } from '../context/AuthContext' // 1. Importação do contexto
 import './AuthPages.css'
 
 export default function Login() {
   const navigate = useNavigate()
+  const { login } = useAuth() // 2. Trazendo a função de login do AuthContext
   const [form, setForm] = useState({ email: '', senha: '' })
   const [errors, setErrors] = useState({})
-  const [isLoading, setIsLoading] = useState(false) // Novo estado para controlar o botão
+  const [isLoading, setIsLoading] = useState(false) 
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
 
   const validate = () => {
     const next = {}
     if (!/^\S+@\S+\.\S+$/.test(form.email)) next.email = 'Informe um e-mail válido.'
-    if (form.senha.length < 6) next.senha = 'A senha deve ter no mínimo 6 caracteres.'
+    if (form.senha.length < 8) next.senha = 'A senha deve ter no mínimo 8 caracteres.'
     setErrors(next)
     return Object.keys(next).length === 0
   }
@@ -24,10 +26,9 @@ export default function Login() {
     e.preventDefault()
     if (!validate()) return
 
-    setIsLoading(true) // Desabilita o botão enquanto carrega
+    setIsLoading(true) 
 
     try {
-      // Dispara a requisição para o seu Spring Boot
       const response = await fetch('http://localhost:8081/api/auth/login', {
         method: 'POST',
         headers: {
@@ -39,22 +40,20 @@ export default function Login() {
         })
       })
 
-      // Se o Spring Boot retornar 200 OK
       if (response.ok) {
-        // Dependendo de como você montou o backend, ele pode retornar texto ou JSON.
-        // Se ele retornar o Token JWT em JSON, use: const data = await response.json()
-        // e depois salve: localStorage.setItem('token', data.token)
+        // 3. Lê a resposta do Spring Boot
+        const data = await response.json() 
+        
+        // 4. Salva o token no contexto. Isso esconde os botões do Navbar instantaneamente!
+        login(data.token) 
         
         toast.success('Login realizado com sucesso!')
         navigate('/')
-      } 
-      // Se o Spring Boot retornar 401 Unauthorized ou 403 Forbidden
-      else {
+      } else {
         toast.error('E-mail ou senha incorretos.')
       }
       
     } catch (error) {
-      // Cai aqui se o backend estiver desligado ou der erro de CORS
       console.error("Erro na requisição:", error)
       toast.error('Erro ao conectar com o servidor. Tente novamente mais tarde.')
     } finally {

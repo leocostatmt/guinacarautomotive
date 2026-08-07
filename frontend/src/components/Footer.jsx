@@ -50,15 +50,15 @@ export default function Footer() {
           <p className="footer-about">
             A Guinacar Autopeças nasceu da paixão por carros e da vontade de oferecer peças automotivas de qualidade para todos os motoristas do Brasil.
           </p>
-          <p className="footer-about"><strong>Missão:</strong> manter o Brasil rodando com segurança.</p>
-          <p className="footer-about"><strong>Visão:</strong> ser a autopeças online mais confiável do país.</p>
-          <p className="footer-about"><strong>Valores:</strong> qualidade, transparência e agilidade.</p>
+          <p className="footer-about"><strong>Missão:</strong> Manter o Brasil rodando com segurança.</p>
+          <p className="footer-about"><strong>Visão:</strong> Ser a autopeças online mais confiável do país.</p>
+          <p className="footer-about"><strong>Valores:</strong> Qualidade, transparência e agilidade.</p>
         </div>
       </div>
 
-      <div className="footer-stripe stripe-divider" />
+      {/* <div className="footer-stripe stripe-divider" /> */}
 
-      <div className="container footer-bottom">
+      <div className="container-footer-bottom">
         <span>© {year} Guinacar Autopeças. Todos os direitos reservados.</span>
         <span className="mono">CNPJ 24.642.205/0001-39</span>
       </div>

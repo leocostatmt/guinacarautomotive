@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { FaShoppingCart } from 'react-icons/fa'
+import { useParams, useNavigate } from 'react-router-dom'
+import { FaShoppingCart, FaArrowLeft } from 'react-icons/fa'
 import toast from 'react-hot-toast'
 import Breadcrumb from '../components/Breadcrumb'
 import NotFound from './NotFound'
@@ -13,6 +13,7 @@ import './ProductDetail.css'
 
 export default function ProductDetail() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const product = getProductById(id)
   const { addToCart } = useCart()
   const [quantity, setQuantity] = useState(1)
@@ -30,6 +31,11 @@ export default function ProductDetail() {
   return (
     <div className="page">
       <div className="container page-section">
+        
+        <button className="btn-voltar" onClick={() => navigate(-1)} aria-label="Voltar para a página anterior">
+          <FaArrowLeft /> Voltar
+        </button>
+
         <Breadcrumb
           items={[
             { label: 'Catálogo', to: '/catalogo' },

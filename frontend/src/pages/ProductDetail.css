@@ -1,8 +1,32 @@
+.btn-voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: var(--gray);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 24px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-voltar:hover {
+  color: var(--red);
+  transform: translateX(-4px);
+}
+
 .product-detail {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 44px;
   margin-top: 12px;
+  margin-bottom: 40px;
 }
 
 .product-detail-image {

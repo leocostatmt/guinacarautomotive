@@ -21,6 +21,15 @@
   transform: translateX(-4px);
 }
 
+
+.container.page-section {
+  max-width: 1200px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+  padding: 0 16px;
+}
+
+
 .product-detail {
   display: grid;
   grid-template-columns: 1fr 1fr;

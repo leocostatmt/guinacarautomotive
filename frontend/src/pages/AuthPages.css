@@ -8,6 +8,7 @@
   display: flex;
   justify-content: center;
   padding: 48px 20px;
+  margin-bottom: 40px;
   width: 100%;
 }
 
@@ -15,12 +16,16 @@
   width: 100%;
   max-width: 440px;
   padding: 40px 36px;
+  margin: 0 auto;
+  margin-top: 40px;
+  margin-bottom: 40px;
   text-align: center;
 }
 
 .auth-card form {
   text-align: left;
   margin-top: 24px;
+  margin-bottom: 16px;
 }
 
 .auth-card .section-heading {

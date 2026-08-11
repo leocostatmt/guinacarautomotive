@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useSearchParams } from 'react-router-dom'
 import Breadcrumb from '../components/Breadcrumb'
 import ProductCard from '../components/ProductCard'
 import ProductCardSkeleton from '../components/ProductCardSkeleton'
+import { FaArrowLeft } from 'react-icons/fa'
 import { products } from '../data/products'
 import { categories } from '../data/categories'
 import { brands } from '../data/brands'
@@ -14,6 +16,7 @@ export default function Catalog() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [loading, setLoading] = useState(true)
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
+  const navigate = useNavigate()
 
   const term = searchParams.get('busca') || ''
   const categoryFilter = searchParams.get('categoria') || ''
@@ -59,6 +62,12 @@ export default function Catalog() {
   return (
     <div className="page">
       <div className="container page-section">
+
+        {/* BOTÃO DE VOLTAR ADICIONADO AQUI */}
+        <button className="btn-voltar" onClick={() => navigate(-1)} aria-label="Voltar para a página anterior">
+          <FaArrowLeft/> Voltar
+        </button>
+
         <Breadcrumb items={[{ label: 'Catálogo' }]} />
         <span className="eyebrow">Catálogo completo</span>
         <h1 className="section-heading">Todas as peças</h1>

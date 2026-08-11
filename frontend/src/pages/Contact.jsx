@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { FaArrowLeft } from 'react-icons/fa'
 import { FaPhoneAlt, FaWhatsapp, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa'
 import toast from 'react-hot-toast'
 import Breadcrumb from '../components/Breadcrumb'
@@ -15,6 +17,8 @@ export default function Contact() {
   const [form, setForm] = useState({ nome: '', email: '', mensagem: '' })
   const [openFaq, setOpenFaq] = useState(null)
 
+  const navigate = useNavigate()
+
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
 
   const handleSubmit = (e) => {
@@ -30,6 +34,11 @@ export default function Contact() {
   return (
     <div className="page">
       <div className="container page-section">
+
+        <button className="btn-voltar" onClick={() => navigate(-1)} aria-label="Voltar para a página anterior">
+          <FaArrowLeft/> Voltar
+        </button>
+        
         <Breadcrumb items={[{ label: 'Contato' }]} />
         <span className="eyebrow">Fale conosco</span>
         <h1 className="section-heading">Central de Ajuda</h1>

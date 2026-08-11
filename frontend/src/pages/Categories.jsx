@@ -1,8 +1,9 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   FaCogs, FaCompressArrowsAlt, FaStopCircle, FaBolt, FaLightbulb,
   FaFan, FaCompass, FaSmog, FaOilCan, FaShoppingBag,
 } from 'react-icons/fa'
+import { FaArrowLeft } from 'react-icons/fa'
 import Breadcrumb from '../components/Breadcrumb'
 import { categories } from '../data/categories'
 import { products } from '../data/products'
@@ -22,9 +23,13 @@ const iconMap = {
 }
 
 export default function Categories() {
+  const navigate = useNavigate()
   return (
     <div className="page">
       <div className="container page-section">
+        <button className="btn-voltar" onClick={() => navigate(-1)} aria-label="Voltar para a página anterior">
+          <FaArrowLeft/> Voltar
+        </button>
         <Breadcrumb items={[{ label: 'Categorias' }]} />
         <span className="eyebrow">Explore por categoria</span>
         <h1 className="section-heading">Categorias de peças</h1>

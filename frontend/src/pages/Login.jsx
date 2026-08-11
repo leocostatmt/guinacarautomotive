@@ -2,15 +2,19 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { motion } from 'framer-motion'
-import { useAuth } from '../context/AuthContext' // 1. Importação do contexto
+import { useAuth } from '../context/AuthContext'
+import { FaEye, FaEyeSlash } from 'react-icons/fa' // Importação dos ícones
 import './AuthPages.css'
 
 export default function Login() {
   const navigate = useNavigate()
-  const { login } = useAuth() // 2. Trazendo a função de login do AuthContext
+  const { login } = useAuth()
   const [form, setForm] = useState({ email: '', senha: '' })
   const [errors, setErrors] = useState({})
-  const [isLoading, setIsLoading] = useState(false) 
+  const [isLoading, setIsLoading] = useState(false)
+  
+  // Estado para controlar a visibilidade da senha
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
 
@@ -41,12 +45,8 @@ export default function Login() {
       })
 
       if (response.ok) {
-        // 3. Lê a resposta do Spring Boot
         const data = await response.json() 
-        
-        // 4. Salva o token no contexto. Isso esconde os botões do Navbar instantaneamente!
         login(data.token) 
-        
         toast.success('Login realizado com sucesso!')
         navigate('/')
       } else {
@@ -79,9 +79,35 @@ export default function Login() {
               <input id="email" name="email" type="email" value={form.email} onChange={handleChange} placeholder="voce@email.com" disabled={isLoading} />
               {errors.email && <span className="form-error">{errors.email}</span>}
             </div>
+            
             <div className="form-field">
               <label htmlFor="senha">Senha</label>
-              <input id="senha" name="senha" type="password" value={form.senha} onChange={handleChange} placeholder="••••••••" disabled={isLoading} />
+              {/* Wrapper para posicionar o ícone dentro do input */}
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <input 
+                  id="senha" 
+                  name="senha" 
+                  type={showPassword ? "text" : "password"} 
+                  value={form.senha} 
+                  onChange={handleChange} 
+                  placeholder="••••••••" 
+                  disabled={isLoading}
+                  style={{ width: '100%', paddingRight: '40px' }} // Espaço extra para o ícone não sobrepor o texto
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  style={{
+                    position: 'absolute', right: '12px', background: 'transparent',
+                    border: 'none', color: '#888', cursor: 'pointer', padding: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}
+                  tabIndex="-1" // Evita que o usuário pare no ícone ao apertar a tecla TAB
+                >
+                  {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                </button>
+              </div>
               {errors.senha && <span className="form-error">{errors.senha}</span>}
             </div>
 

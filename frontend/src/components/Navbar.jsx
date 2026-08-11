@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { NavLink, redirect } from 'react-router-dom'
-import { FaShoppingCart, FaBars, FaTimes, FaUser, FaUserPlus, FaSignOutAlt } from 'react-icons/fa'
+import { NavLink, Link, useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { FaShoppingCart, FaBars, FaTimes, FaUser, FaUserPlus, FaSignOutAlt, FaRegUserCircle } from 'react-icons/fa'
 import Logo from './Logo'
 import SearchBar from './SearchBar'
 import { useCart } from '../context/CartContext'
-import { useAuth } from '../context/AuthContext' // Importando o contexto de autenticação
+import { useAuth } from '../context/AuthContext'
 import './Navbar.css'
 
 const links = [
@@ -18,11 +19,20 @@ const links = [
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const { itemCount } = useCart()
-  
-  // Trazendo o estado de login e a função de deslogar
-  const { isLoggedIn, logout } = useAuth() 
+  const { isLoggedIn, user, logout } = useAuth() 
+  const navigate = useNavigate()
 
   const close = () => setOpen(false)
+
+  const handleLogout = () => {
+    logout()
+    close()
+    toast.success('Você saiu da conta com sucesso.')
+    navigate('/')
+  }
+
+  // Pega apenas o primeiro nome para a saudação. Se a API ainda estiver carregando, usa um fallback.
+  const primeiroNome = user?.nome ? user.nome.split(' ')[0] : 'Leonardo';
 
   return (
     <>
@@ -37,6 +47,25 @@ export default function Navbar() {
           <Logo />
 
           <div className="navbar-actions">
+            
+            {/* DROPDOWN MINHA CONTA (Visível apenas se logado) */}
+            {isLoggedIn && (
+              <div className="user-dropdown-container">
+                <div className="user-dropdown-trigger">
+                  <span>Olá, {primeiroNome}</span>
+                  <FaRegUserCircle size={20} />
+                </div>
+                
+                {/* Menu que aparece no Hover */}
+                <div className="user-dropdown-menu">
+                  <Link to="/minha-conta">Minha Conta</Link>
+                  <Link to="/meus-pedidos">Meus Pedidos</Link>
+                  <Link to="/meus-favoritos">Meus Favoritos</Link>
+                  <button onClick={handleLogout}>Sair</button>
+                </div>
+              </div>
+            )}
+
             <NavLink to="/carrinho" className="navbar-cart" title="Carrinho">
               <FaShoppingCart />
               {itemCount > 0 && <span className="navbar-cart-badge">{itemCount}</span>}
@@ -81,9 +110,7 @@ export default function Navbar() {
           </nav>
 
           <div className="sidebar-auth">
-            {/* LÓGICA DE EXIBIÇÃO CONDICIONAL */}
             {!isLoggedIn ? (
-              // SE NÃO ESTIVER LOGADO: Mostra Login e Cadastro
               <>
                 <NavLink to="/login" onClick={close} className="sidebar-auth-link">
                   <FaUser />
@@ -95,13 +122,8 @@ export default function Navbar() {
                 </NavLink>
               </>
             ) : (
-              // SE ESTIVER LOGADO: Mostra botão de Sair
               <button 
-                onClick={() => { 
-                  logout(); 
-                  close(); 
-                  redirect('/'); // Redireciona para a página inicial após logout
-                }} 
+                onClick={handleLogout}
                 className="sidebar-auth-link"
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, width: '100%', textAlign: 'left', fontFamily: 'inherit' }}
               >

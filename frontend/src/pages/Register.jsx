@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { motion } from 'framer-motion'
+import { FaEye, FaEyeSlash } from 'react-icons/fa' // Importação dos ícones
 import './AuthPages.css'
 
 const initialForm = { nome: '', cpf: '', telefone: '', email: '', senha: '', confirmarSenha: '' }
@@ -11,6 +12,10 @@ export default function Register() {
   const [form, setForm] = useState(initialForm)
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
+  
+  // Estados para visibilidade das senhas
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
 
@@ -52,8 +57,8 @@ export default function Register() {
         },
         body: JSON.stringify({
           nome: form.nome,
-          cpf: form.cpf.replace(/\D/g, ''), // Envia apenas os números do CPF para o backend
-          telefone: form.telefone.replace(/\D/g, ''), // Envia apenas os números
+          cpf: form.cpf.replace(/\D/g, ''), 
+          telefone: form.telefone.replace(/\D/g, ''), 
           email: form.email,
           senha: form.senha,
           confirmarSenha: form.confirmarSenha
@@ -64,26 +69,18 @@ export default function Register() {
         toast.success('Conta criada com sucesso! Faça login para continuar.')
         navigate('/login')
       } else {
-        // Prepara uma mensagem padrão caso o backend não mande nada
         let errorMessage = 'Este e-mail ou CPF já está cadastrado em nosso sistema.'
         
         try {
-          // Tenta ler a resposta do Spring Boot como JSON (formato mais comum de APIs)
           const errorData = await response.json()
-          
-          // Se o seu backend enviar { "message": "E-mail já existe" }, ele pega aqui:
           if (errorData.message) errorMessage = errorData.message
           else if (errorData.error) errorMessage = errorData.error
-          
         } catch (e) {
-          // Se o backend enviar apenas um texto simples em vez de JSON
           const errorText = await response.text()
           if (errorText && errorText.trim() !== '') {
             errorMessage = errorText
           }
         }
-
-        // Dispara o alerta vermelho na tela com o erro exato
         toast.error(errorMessage)
       }
     } catch (error) {
@@ -127,14 +124,62 @@ export default function Register() {
               <input id="email" name="email" type="email" value={form.email} onChange={handleChange} placeholder="voce@email.com" disabled={isLoading} />
               {errors.email && <span className="form-error">{errors.email}</span>}
             </div>
+            
             <div className="form-field">
               <label htmlFor="senha">Senha</label>
-              <input id="senha" name="senha" type="password" value={form.senha} onChange={handleChange} placeholder="••••••••" disabled={isLoading} />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <input 
+                  id="senha" 
+                  name="senha" 
+                  type={showPassword ? "text" : "password"} 
+                  value={form.senha} 
+                  onChange={handleChange} 
+                  placeholder="••••••••" 
+                  disabled={isLoading}
+                  style={{ width: '100%', paddingRight: '40px' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute', right: '12px', background: 'transparent',
+                    border: 'none', color: '#888', cursor: 'pointer', padding: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}
+                  tabIndex="-1"
+                >
+                  {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                </button>
+              </div>
               {errors.senha && <span className="form-error">{errors.senha}</span>}
             </div>
+            
             <div className="form-field">
               <label htmlFor="confirmarSenha">Confirmar senha</label>
-              <input id="confirmarSenha" name="confirmarSenha" type="password" value={form.confirmarSenha} onChange={handleChange} placeholder="••••••••" disabled={isLoading} />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <input 
+                  id="confirmarSenha" 
+                  name="confirmarSenha" 
+                  type={showConfirmPassword ? "text" : "password"} 
+                  value={form.confirmarSenha} 
+                  onChange={handleChange} 
+                  placeholder="••••••••" 
+                  disabled={isLoading}
+                  style={{ width: '100%', paddingRight: '40px' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  style={{
+                    position: 'absolute', right: '12px', background: 'transparent',
+                    border: 'none', color: '#888', cursor: 'pointer', padding: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}
+                  tabIndex="-1"
+                >
+                  {showConfirmPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                </button>
+              </div>
               {errors.confirmarSenha && <span className="form-error">{errors.confirmarSenha}</span>}
             </div>
 

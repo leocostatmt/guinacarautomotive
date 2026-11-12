@@ -6,12 +6,12 @@ import guinacar.guinacarautomotive.dto.auth.LoginRequest;
 import guinacar.guinacarautomotive.dto.auth.RecuperarSenhaRequest;
 import guinacar.guinacarautomotive.dto.auth.RedefinirSenhaRequest;
 import guinacar.guinacarautomotive.dto.auth.UsuarioResponse;
-import guinacar.guinacarautomotive.security.UserDetailsImpl;
 import guinacar.guinacarautomotive.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,7 +52,11 @@ public class AuthController {
 
     /** Retorna os dados do usuário do token JWT enviado no header Authorization. */
     @GetMapping("/me")
-    public ResponseEntity<UsuarioResponse> me(@AuthenticationPrincipal UserDetailsImpl usuarioAutenticado) {
-        return ResponseEntity.ok(authService.buscarPorEmail(usuarioAutenticado.getUsername()));
+    public ResponseEntity<UsuarioResponse> me(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(authService.buscarPorEmail(authentication.getName()));
     }
 }

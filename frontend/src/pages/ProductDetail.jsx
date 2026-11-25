@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { FaShoppingCart, FaArrowLeft } from 'react-icons/fa'
+import { FaShoppingCart, FaArrowLeft, FaHeart, FaRegHeart } from 'react-icons/fa'
 import toast from 'react-hot-toast'
 import Breadcrumb from '../components/Breadcrumb'
 import NotFound from './NotFound'
 import { useCart } from '../context/CartContext'
+import { useFavorites } from '../context/FavoritesContext'
 import { getProductById } from '../data/products'
 import { getCategoryBySlug } from '../data/categories'
 import { getBrandBySlug } from '../data/brands'
@@ -16,9 +17,12 @@ export default function ProductDetail() {
   const navigate = useNavigate()
   const product = getProductById(id)
   const { addToCart } = useCart()
+  const { isFavorite, toggleFavorite } = useFavorites()
   const [quantity, setQuantity] = useState(1)
 
   if (!product) return <NotFound />
+
+  const favorited = isFavorite(product.id)
 
   const category = getCategoryBySlug(product.category)
   const compatibleBrands = product.vehicleBrands.map(getBrandBySlug).filter(Boolean)
@@ -84,6 +88,15 @@ export default function ProductDetail() {
               </div>
               <button className="btn btn-primary" onClick={handleAdd}>
                 <FaShoppingCart /> Adicionar ao carrinho
+              </button>
+              <button
+                type="button"
+                className="btn btn-outline"
+                onClick={() => toggleFavorite(product)}
+                aria-label={favorited ? 'Remover dos favoritos' : 'Salvar nos favoritos'}
+              >
+                {favorited ? <FaHeart style={{ color: 'var(--red)' }} /> : <FaRegHeart />}
+                {favorited ? 'Favoritado' : 'Favoritar'}
               </button>
             </div>
           </div>

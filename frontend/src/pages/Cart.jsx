@@ -8,52 +8,18 @@ import { formatCurrency } from '../utils/formatCurrency'
 import './Cart.css'
 
 export default function Cart() {
-  const { items, removeFromCart, updateQuantity, clearCart, subtotal, shipping, total } = useCart()
+  const { items, removeFromCart, updateQuantity, subtotal, shipping, total } = useCart()
   
   const navigate = useNavigate()
-  const { isLoggedIn, logout } = useAuth()
+  const { isLoggedIn } = useAuth()
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (!isLoggedIn) {
-      toast.error('Você precisa estar logado para finalizar a compra!')
-      navigate('/login')
+      toast.error('Faça login para continuar para o checkout!')
+      navigate('/login', { state: { from: '/checkout' } })
       return
     }
-
-    try {
-      const token = localStorage.getItem('token')
-      
-      const response = await fetch('http://localhost:8081/api/pedidos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` 
-        },
-        body: JSON.stringify({ 
-          itens: items, 
-          subtotal: subtotal,
-          frete: shipping,
-          total: total 
-        })
-      })
-
-      if (response.status === 401 || response.status === 403) {
-        logout() 
-        toast.error('Sua sessão expirou. Por favor, faça login novamente.')
-        navigate('/login')
-      } 
-      else if (response.ok) {
-        toast.success('Pedido finalizado com sucesso! Obrigado por comprar na GuinaCar.')
-        clearCart()
-      } 
-      else {
-        toast.error('Erro ao processar o pedido. Tente novamente.')
-      }
-
-    } catch (error) {
-      console.error("Erro no checkout:", error)
-      toast.error('Erro ao conectar com o servidor.')
-    }
+    navigate('/checkout')
   }
 
   return (
@@ -117,7 +83,7 @@ export default function Cart() {
                 <span className="mono">{formatCurrency(total)}</span>
               </div>
               <button className="btn btn-primary btn-block" onClick={handleCheckout}>
-                Finalizar Compra
+                Continuar para o Checkout
               </button>
             </aside>
           </div>

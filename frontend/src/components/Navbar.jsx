@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { FaShoppingCart, FaBars, FaTimes, FaUser, FaUserPlus, FaSignOutAlt, FaRegUserCircle } from 'react-icons/fa'
+import { FaShoppingCart, FaBars, FaTimes, FaUser, FaUserPlus, FaSignOutAlt, FaRegUserCircle, FaBoxOpen, FaHeart } from 'react-icons/fa'
 import Logo from './Logo'
 import SearchBar from './SearchBar'
 import { useCart } from '../context/CartContext'
@@ -19,7 +19,7 @@ const links = [
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const { itemCount } = useCart()
-  const { isLoggedIn, user, logout } = useAuth() 
+  const { isLoggedIn, user, logout } = useAuth()
   const navigate = useNavigate()
 
   const close = () => setOpen(false)
@@ -32,12 +32,12 @@ export default function Navbar() {
   }
 
   // Pega apenas o primeiro nome para a saudação. Se a API ainda estiver carregando, usa um fallback.
-  const primeiroNome = user?.nome ? user.nome.split(' ')[0] : 'Leonardo';
+  const primeiroNome = user?.nome ? user.nome.split(' ')[0] : 'Conta';
 
   return (
     <>
-      <div 
-        className={`sidebar-overlay ${open ? 'is-open' : ''}`} 
+      <div
+        className={`sidebar-overlay ${open ? 'is-open' : ''}`}
         onClick={close}
         aria-hidden="true"
       ></div>
@@ -47,7 +47,7 @@ export default function Navbar() {
           <Logo />
 
           <div className="navbar-actions">
-            
+
             {/* DROPDOWN MINHA CONTA (Visível apenas se logado) */}
             {isLoggedIn && (
               <div className="user-dropdown-container">
@@ -55,7 +55,7 @@ export default function Navbar() {
                   <span>Olá, {primeiroNome}</span>
                   <FaRegUserCircle size={20} />
                 </div>
-                
+
                 {/* Menu que aparece no Hover */}
                 <div className="user-dropdown-menu">
                   <Link to="/minha-conta">Minha Conta</Link>
@@ -122,14 +122,28 @@ export default function Navbar() {
                 </NavLink>
               </>
             ) : (
-              <button 
-                onClick={handleLogout}
-                className="sidebar-auth-link"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, width: '100%', textAlign: 'left', fontFamily: 'inherit' }}
-              >
-                <FaSignOutAlt />
-                <span>Sair da conta</span>
-              </button>
+              <>
+                <NavLink to="/minha-conta" onClick={close} className="sidebar-auth-link">
+                  <FaUser />
+                  <span>Minha Conta</span>
+                </NavLink>
+                <NavLink to="/meus-pedidos" onClick={close} className="sidebar-auth-link">
+                  <FaBoxOpen />
+                  <span>Meus Pedidos</span>
+                </NavLink>
+                <NavLink to="/meus-favoritos" onClick={close} className="sidebar-auth-link">
+                  <FaHeart />
+                  <span>Meus Favoritos</span>
+                </NavLink>
+                <button
+                  onClick={handleLogout}
+                  className="sidebar-auth-link"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, width: '100%', textAlign: 'left', fontFamily: 'inherit' }}
+                >
+                  <FaSignOutAlt />
+                  <span>Sair da conta</span>
+                </button>
+              </>
             )}
           </div>
         </div>

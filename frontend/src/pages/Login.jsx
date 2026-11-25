@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
@@ -8,6 +8,8 @@ import './AuthPages.css'
 
 export default function Login() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const redirectTo = location.state?.from || '/'
   const { login } = useAuth()
   const [form, setForm] = useState({ email: '', senha: '' })
   const [errors, setErrors] = useState({})
@@ -48,7 +50,7 @@ export default function Login() {
         const data = await response.json() 
         login(data.token) 
         toast.success('Login realizado com sucesso!')
-        navigate('/')
+        navigate(redirectTo, { replace: true })
       } else {
         toast.error('E-mail ou senha incorretos.')
       }

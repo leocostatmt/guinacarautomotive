@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 public class ItemPedidoRequest {
     private String id; // O ID do produto que vem do front-end
     private String name;
+    private String image;
     private Integer quantity;
     private BigDecimal price;
 
@@ -13,6 +14,8 @@ public class ItemPedidoRequest {
     public void setId(String id) { this.id = id; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+    public String getImage() { return image; }
+    public void setImage(String image) { this.image = image; }
     public Integer getQuantity() { return quantity; }
     public void setQuantity(Integer quantity) { this.quantity = quantity; }
     public BigDecimal getPrice() { return price; }

@@ -1,43 +1,61 @@
 package guinacar.guinacarautomotive.controller;
 
 import guinacar.guinacarautomotive.dto.pedido.PedidoRequest;
+import guinacar.guinacarautomotive.dto.pedido.PedidoResponse;
 import guinacar.guinacarautomotive.security.UserDetailsImpl;
+import guinacar.guinacarautomotive.service.PedidoService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/pedidos")
 public class PedidoController {
 
-    // Em um cenário real, você injetaria o seu PedidoService aqui no construtor
-    // private final PedidoService pedidoService;
+    private final PedidoService pedidoService;
+
+    public PedidoController(PedidoService pedidoService) {
+        this.pedidoService = pedidoService;
+    }
 
     @PostMapping
-    public ResponseEntity<?> criarPedido(
-            @RequestBody PedidoRequest pedidoRequest, 
-            @AuthenticationPrincipal UserDetailsImpl usuarioAutenticado 
+    public ResponseEntity<PedidoResponse> criarPedido(
+            @RequestBody PedidoRequest pedidoRequest,
+            @AuthenticationPrincipal UserDetailsImpl usuarioAutenticado
     ) {
-        
-        // 1. Identificando quem está comprando
-        String emailComprador = usuarioAutenticado.getUsername();
-        
-        // 2. Imprimindo os dados recebidos para termos certeza que a conexão funcionou
-        System.out.println("=========================================");
-        System.out.println("NOVO PEDIDO RECEBIDO!");
-        System.out.println("Cliente: " + emailComprador);
-        System.out.println("Total a pagar: R$ " + pedidoRequest.getTotal());
-        System.out.println("Itens no carrinho:");
-        
-        pedidoRequest.getItens().forEach(item -> {
-            System.out.println(" - " + item.getQuantity() + "x " + item.getName() + " (R$ " + item.getPrice() + ")");
-        });
-        System.out.println("=========================================");
+        PedidoResponse criado = pedidoService.criarPedido(usuarioAutenticado.getId(), pedidoRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(criado);
+    }
 
-        // 3. Onde a mágica do banco de dados acontecerá:
-        // pedidoService.salvar(pedidoRequest, emailComprador);
+    @GetMapping
+    public ResponseEntity<List<PedidoResponse>> listarMeusPedidos(
+            @AuthenticationPrincipal UserDetailsImpl usuarioAutenticado
+    ) {
+        return ResponseEntity.ok(pedidoService.listarPorUsuario(usuarioAutenticado.getId()));
+    }
 
-        // 4. Retornando sucesso para o React
-        return ResponseEntity.ok("Pedido salvo com sucesso!");
+    @PostMapping("/{id}/confirmar-pagamento")
+    public ResponseEntity<PedidoResponse> confirmarPagamento(
+            @PathVariable("id") Long pedidoId,
+            @AuthenticationPrincipal UserDetailsImpl usuarioAutenticado
+    ) {
+        return ResponseEntity.ok(pedidoService.confirmarPagamento(usuarioAutenticado.getId(), pedidoId));
+    }
+
+    @PatchMapping("/{id}/cancelar")
+    public ResponseEntity<PedidoResponse> cancelarPedido(
+            @PathVariable("id") Long pedidoId,
+            @AuthenticationPrincipal UserDetailsImpl usuarioAutenticado
+    ) {
+        return ResponseEntity.ok(pedidoService.cancelarPedido(usuarioAutenticado.getId(), pedidoId));
     }
 }

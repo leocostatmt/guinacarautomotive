@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(localStorage.getItem('token')));
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(() => Boolean(localStorage.getItem('token')));
 
@@ -16,6 +16,8 @@ export function AuthProvider({ children }) {
 
   const fetchUserProfile = useCallback(async (token) => {
     if (!token) {
+      setIsLoggedIn(false);
+      setUser(null);
       setLoadingUser(false);
       return;
     }
@@ -28,11 +30,14 @@ export function AuthProvider({ children }) {
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
-      } else if (response.status === 401 || response.status === 403) {
+        setIsLoggedIn(true);
+      } else {
         logout();
       }
     } catch (error) {
-      console.error('Erro ao buscar perfil do usuário:', error);
+      console.error('Erro ao validar sessão do usuário:', error);
+      setIsLoggedIn(false);
+      setUser(null);
     } finally {
       setLoadingUser(false);
     }
@@ -41,14 +46,19 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      setIsLoggedIn(true);
       fetchUserProfile(token);
+    } else {
+      setLoadingUser(false);
     }
   }, [fetchUserProfile]);
 
-  const login = (token) => {
+  const login = (token, initialUser = null) => {
     localStorage.setItem('token', token);
-    setIsLoggedIn(true);
+    if (initialUser) {
+      setUser(initialUser);
+      setIsLoggedIn(true);
+      setLoadingUser(false);
+    }
     fetchUserProfile(token);
   };
 

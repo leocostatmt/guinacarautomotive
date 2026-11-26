@@ -14,6 +14,7 @@ public record ProdutoDTO(
         Integer stock,
         boolean active,
         String image,
+        List<String> images,
         CategoriaResumoDTO category,
         List<ProdutoSpecDTO> specs,
         List<CompatibilidadeDTO> compatibilidades,

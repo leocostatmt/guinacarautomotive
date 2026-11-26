@@ -4,6 +4,7 @@ import guinacar.guinacarautomotive.dto.common.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -47,6 +48,20 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors()
                 .forEach(fieldError -> erros.put(fieldError.getField(), fieldError.getDefaultMessage()));
         return construir(HttpStatus.BAD_REQUEST, "Dados inválidos", request, erros);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleIntegridade(DataIntegrityViolationException ex, HttpServletRequest request) {
+        log.error("Erro de integridade de dados em {}", request.getRequestURI(), ex);
+        String msg = "Não foi possível salvar os dados por conflito de restrição no banco de dados.";
+        String detalhe = ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : "";
+        if (detalhe != null) {
+            String lower = detalhe.toLowerCase();
+            if (lower.contains("email")) msg = "Este e-mail já está cadastrado.";
+            else if (lower.contains("cpf")) msg = "Este CPF já está cadastrado.";
+            else if (lower.contains("slug")) msg = "Já existe um registro com este identificador (slug).";
+        }
+        return construir(HttpStatus.CONFLICT, msg, request, null);
     }
 
     @ExceptionHandler(Exception.class)

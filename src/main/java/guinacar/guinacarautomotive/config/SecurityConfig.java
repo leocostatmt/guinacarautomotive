@@ -60,10 +60,14 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/produtos/**", "/api/categorias/**", "/api/marcas/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/produtos/**", "/api/categorias/**", "/api/marcas/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/produtos/**", "/api/categorias/**", "/api/marcas/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/produtos/**", "/api/categorias/**", "/api/marcas/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/dashboard/**", "/api/admin/relatorios/**", "/api/admin/usuarios/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/pedidos/**", "/api/admin/produtos/**", "/api/admin/categorias/**", "/api/admin/montadoras/**", "/api/admin/uploads/**").hasAnyRole("ADMIN", "FUNCIONARIO")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

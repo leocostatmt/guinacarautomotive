@@ -17,4 +17,10 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long>, JpaSpec
     Optional<Produto> findBySlug(String slug);
 
     boolean existsBySlug(String slug);
+
+    boolean existsBySlugAndIdNot(String slug, Long id);
+
+    long countByActiveTrue();
+
+    long countByActiveTrueAndStockLessThanEqual(Integer stock);
 }

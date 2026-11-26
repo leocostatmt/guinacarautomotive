@@ -10,6 +10,7 @@ import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthContext'
 import { FavoritesProvider } from './context/FavoritesContext'
 import PrivateRoute from './components/PrivateRoute'
+import AdminRoute from './components/AdminRoute'
 
 import Home from './pages/Home'
 import Catalog from './pages/Catalog'
@@ -27,6 +28,11 @@ import Contact from './pages/Contact'
 import MyAccount from './pages/MyAccount'
 import MyOrders from './pages/MyOrders'
 import MyFavorites from './pages/MyFavorites'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminOrders from './pages/admin/AdminOrders'
+import AdminProducts from './pages/admin/AdminProducts'
+import AdminUsers from './pages/admin/AdminUsers'
+import AdminReports from './pages/admin/AdminReports'
 import NotFound from './pages/NotFound'
 
 // Reseta a rolagem da página sempre que a rota muda
@@ -92,6 +98,57 @@ export default function App() {
                   </PrivateRoute>
                 }
               />
+
+              {/* Central do Vendedor / Administrador */}
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute allowedRoles={['ADMIN']}>
+                    <AdminDashboard />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/pedidos"
+                element={
+                  <AdminRoute allowedRoles={['ADMIN', 'FUNCIONARIO']}>
+                    <AdminOrders />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/produtos"
+                element={
+                  <AdminRoute allowedRoles={['ADMIN', 'FUNCIONARIO']}>
+                    <AdminProducts />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/clientes"
+                element={
+                  <AdminRoute allowedRoles={['ADMIN']}>
+                    <AdminUsers mode="CLIENTES" />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/funcionarios"
+                element={
+                  <AdminRoute allowedRoles={['ADMIN']}>
+                    <AdminUsers mode="FUNCIONARIOS" />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/relatorios"
+                element={
+                  <AdminRoute allowedRoles={['ADMIN']}>
+                    <AdminReports />
+                  </AdminRoute>
+                }
+              />
+
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

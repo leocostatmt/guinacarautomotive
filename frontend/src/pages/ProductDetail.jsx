@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { FaShoppingCart, FaArrowLeft, FaHeart, FaRegHeart } from 'react-icons/fa'
 import toast from 'react-hot-toast'
@@ -6,7 +6,7 @@ import Breadcrumb from '../components/Breadcrumb'
 import NotFound from './NotFound'
 import { useCart } from '../context/CartContext'
 import { useFavorites } from '../context/FavoritesContext'
-import { getProductById } from '../data/products'
+import { fetchProductBySlug } from '../services/productsApi'
 import { getCategoryBySlug } from '../data/categories'
 import { getBrandBySlug } from '../data/brands'
 import { formatCurrency } from '../utils/formatCurrency'
@@ -15,17 +15,54 @@ import './ProductDetail.css'
 export default function ProductDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const product = getProductById(id)
   const { addToCart } = useCart()
   const { isFavorite, toggleFavorite } = useFavorites()
+
+  const [product, setProduct] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [selectedImg, setSelectedImg] = useState('')
   const [quantity, setQuantity] = useState(1)
+
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    fetchProductBySlug(id)
+      .then((found) => {
+        if (!active) return
+        setProduct(found)
+        setSelectedImg(found?.images?.[0] || found?.image || '')
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
+    return () => {
+      active = false
+    }
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="page">
+        <div className="container page-section">
+          <div className="skeleton" style={{ height: 420 }} />
+        </div>
+      </div>
+    )
+  }
 
   if (!product) return <NotFound />
 
   const favorited = isFavorite(product.id)
-
   const category = getCategoryBySlug(product.category)
-  const compatibleBrands = product.vehicleBrands.map(getBrandBySlug).filter(Boolean)
+  const gallery =
+    Array.isArray(product.images) && product.images.length > 0
+      ? product.images
+      : product.image
+        ? [product.image]
+        : []
+
+  const compatList = Array.isArray(product.compatibilidades) ? product.compatibilidades : []
+  const compatibleBrands = (product.vehicleBrands || []).map(getBrandBySlug).filter(Boolean)
 
   const handleAdd = () => {
     addToCart(product, quantity)
@@ -35,7 +72,6 @@ export default function ProductDetail() {
   return (
     <div className="page">
       <div className="container page-section">
-        
         <button className="btn-voltar" onClick={() => navigate(-1)} aria-label="Voltar para a página anterior">
           <FaArrowLeft /> Voltar
         </button>
@@ -43,42 +79,76 @@ export default function ProductDetail() {
         <Breadcrumb
           items={[
             { label: 'Catálogo', to: '/catalogo' },
-            ...(category ? [{ label: category.name, to: `/categorias/${category.slug}` }] : []),
+            ...(category
+              ? [{ label: category.name, to: `/categorias/${category.slug}` }]
+              : product.categoryName
+                ? [{ label: product.categoryName }]
+                : []),
             { label: product.name },
           ]}
         />
 
         <div className="product-detail">
-          <div className="product-detail-image panel">
-            <img src={product.image} alt={product.name} />
+          <div className="product-detail-media-col">
+            <div className="product-detail-image panel">
+              <img src={selectedImg || product.image} alt={product.name} />
+            </div>
+            {gallery.length > 1 && (
+              <div className="product-detail-thumbs">
+                {gallery.map((url, idx) => (
+                  <button
+                    key={url + idx}
+                    type="button"
+                    className={`product-detail-thumb ${(selectedImg || product.image) === url ? 'is-active' : ''}`}
+                    onClick={() => setSelectedImg(url)}
+                  >
+                    <img src={url} alt={`${product.name} - foto ${idx + 1}`} />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="product-detail-info">
             <span className="eyebrow mono">{product.manufacturer}</span>
             <h1 className="product-detail-title">{product.name}</h1>
             <p className="product-detail-price mono">{formatCurrency(product.price)}</p>
-            <p className="product-detail-description">{product.description}</p>
+            {product.description && <p className="product-detail-description">{product.description}</p>}
 
-            <div className="product-detail-specs">
-              <h3>Especificações</h3>
-              <ul>
-                {product.specs.map((spec) => (
-                  <li key={spec.label}>
-                    <span className="mono">{spec.label}</span>
-                    <span>{spec.value}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="product-detail-compat">
-              <h3>Compatibilidade com veículos</h3>
-              <div className="product-detail-compat-tags">
-                {compatibleBrands.map((b) => (
-                  <span key={b.slug} className="mono">{b.name}</span>
-                ))}
+            {product.specs && product.specs.length > 0 && (
+              <div className="product-detail-specs">
+                <h3>Especificações</h3>
+                <ul>
+                  {product.specs.map((spec, idx) => (
+                    <li key={`${spec.label}-${idx}`}>
+                      <span className="mono">{spec.label}</span>
+                      <span>{spec.value}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </div>
+            )}
+
+            {(compatList.length > 0 || compatibleBrands.length > 0) && (
+              <div className="product-detail-compat">
+                <h3>Aplicações / Compatibilidade com veículos</h3>
+                {compatList.length > 0 ? (
+                  <div className="product-detail-compat-tags">
+                    {compatList.map((c, idx) => (
+                      <span key={`${c.modeloId}-${idx}`} className="mono">
+                        {c.montadora} {c.modelo} ({c.anoInicio}–{c.anoFim || 'Atual'})
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="product-detail-compat-tags">
+                    {compatibleBrands.map((b) => (
+                      <span key={b.slug} className="mono">{b.name}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="product-detail-buy">
               <div className="cart-item-qty">

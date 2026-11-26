@@ -48,6 +48,12 @@ public class Usuario {
     @Column(nullable = false, length = 20)
     private Role role = Role.USER;
 
+    @Column(length = 80)
+    private String cargo;
+
+    @Column(length = 80)
+    private String departamento;
+
     @Column(nullable = false)
     private boolean ativo = true;
 
@@ -132,6 +138,22 @@ public class Usuario {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getCargo() {
+        return cargo;
+    }
+
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
+    }
+
+    public String getDepartamento() {
+        return departamento;
+    }
+
+    public void setDepartamento(String departamento) {
+        this.departamento = departamento;
     }
 
     public boolean isAtivo() {

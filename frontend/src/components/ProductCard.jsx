@@ -11,6 +11,7 @@ export default function ProductCard({ product }) {
   const { addToCart } = useCart()
   const { isFavorite, toggleFavorite } = useFavorites()
   const category = getCategoryBySlug(product.category)
+  const categoryLabel = product.categoryName || category?.name
   const favorited = isFavorite(product.id)
 
   const handleAdd = (e) => {
@@ -30,7 +31,7 @@ export default function ProductCard({ product }) {
       <div className="product-card-media-wrap">
         <Link to={`/produto/${product.id}`} className="product-card-media">
           <img src={product.image} alt={product.name} loading="lazy" />
-          {category && <span className="product-card-tag">{category.name}</span>}
+          {categoryLabel && <span className="product-card-tag">{categoryLabel}</span>}
         </Link>
         <button
           type="button"

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { FaShoppingCart, FaBars, FaTimes, FaUser, FaUserPlus, FaSignOutAlt, FaRegUserCircle, FaBoxOpen, FaHeart } from 'react-icons/fa'
+import { FaShoppingCart, FaBars, FaTimes, FaUser, FaUserPlus, FaSignOutAlt, FaRegUserCircle, FaBoxOpen, FaHeart, FaShieldAlt } from 'react-icons/fa'
 import Logo from './Logo'
 import SearchBar from './SearchBar'
 import { useCart } from '../context/CartContext'
@@ -31,8 +31,11 @@ export default function Navbar() {
     navigate('/')
   }
 
-  // Pega apenas o primeiro nome para a saudação. Se a API ainda estiver carregando, usa um fallback.
-  const primeiroNome = user?.nome ? user.nome.split(' ')[0] : 'Conta';
+  // Pega apenas o primeiro nome para a saudação (só exibe quando os dados do usuário forem validados).
+  const primeiroNome = user?.nome ? user.nome.trim().split(' ')[0] : '';
+  const showUserMenu = isLoggedIn && Boolean(primeiroNome);
+  const isStaff = user?.role === 'ADMIN' || user?.role === 'FUNCIONARIO';
+  const adminHome = user?.role === 'ADMIN' ? '/admin' : '/admin/pedidos';
 
   return (
     <>
@@ -48,8 +51,8 @@ export default function Navbar() {
 
           <div className="navbar-actions">
 
-            {/* DROPDOWN MINHA CONTA (Visível apenas se logado) */}
-            {isLoggedIn && (
+            {/* DROPDOWN MINHA CONTA (Visível apenas quando autenticado com perfil validado) */}
+            {showUserMenu && (
               <div className="user-dropdown-container">
                 <div className="user-dropdown-trigger">
                   <span>Olá, {primeiroNome}</span>
@@ -58,6 +61,11 @@ export default function Navbar() {
 
                 {/* Menu que aparece no Hover */}
                 <div className="user-dropdown-menu">
+                  {isStaff && (
+                    <Link to={adminHome} style={{ color: '#e0122a', fontWeight: 700 }}>
+                      Central Admin
+                    </Link>
+                  )}
                   <Link to="/minha-conta">Minha Conta</Link>
                   <Link to="/meus-pedidos">Meus Pedidos</Link>
                   <Link to="/meus-favoritos">Meus Favoritos</Link>
@@ -123,6 +131,12 @@ export default function Navbar() {
               </>
             ) : (
               <>
+                {isStaff && (
+                  <NavLink to={adminHome} onClick={close} className="sidebar-auth-link" style={{ color: 'var(--red)' }}>
+                    <FaShieldAlt />
+                    <span>Central Admin</span>
+                  </NavLink>
+                )}
                 <NavLink to="/minha-conta" onClick={close} className="sidebar-auth-link">
                   <FaUser />
                   <span>Minha Conta</span>

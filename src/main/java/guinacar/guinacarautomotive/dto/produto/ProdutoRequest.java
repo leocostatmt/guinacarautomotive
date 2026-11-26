@@ -11,7 +11,7 @@ import java.util.List;
 
 /** Corpo enviado pelo Admin ao criar ou editar um anúncio de produto. */
 public record ProdutoRequest(
-        @NotBlank(message = "O slug é obrigatório") String slug,
+        String slug,
         @NotBlank(message = "O nome é obrigatório") String name,
         @NotBlank(message = "O fabricante é obrigatório") String manufacturer,
         String description,
@@ -26,6 +26,7 @@ public record ProdutoRequest(
 
         Boolean active,
         String image,
+        List<String> images,
 
         @NotNull(message = "A categoria é obrigatória") Long categoryId,
 

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { FaShippingFast, FaCertificate, FaShieldAlt, FaHeadset } from 'react-icons/fa'
 import ProductCard from '../components/ProductCard'
 import ProductCardSkeleton from '../components/ProductCardSkeleton'
-import { products } from '../data/products'
+import { fetchCatalogProducts } from '../services/productsApi'
 import './Home.css'
 
 const highlights = [
@@ -16,11 +16,20 @@ const highlights = [
 
 export default function Home() {
   const [loading, setLoading] = useState(true)
-  const featured = products.slice(0, 8)
+  const [featured, setFeatured] = useState([])
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 700)
-    return () => clearTimeout(t)
+    let active = true
+    fetchCatalogProducts()
+      .then((list) => {
+        if (active) setFeatured(list.slice(0, 8))
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
+    return () => {
+      active = false
+    }
   }, [])
 
   return (

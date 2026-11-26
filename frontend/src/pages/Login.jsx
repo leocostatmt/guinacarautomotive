@@ -48,9 +48,17 @@ export default function Login() {
 
       if (response.ok) {
         const data = await response.json() 
-        login(data.token) 
+        login(data.token, data.usuario) 
         toast.success('Login realizado com sucesso!')
-        navigate(redirectTo, { replace: true })
+        if (location.state?.from) {
+          navigate(location.state.from, { replace: true })
+        } else if (data.usuario?.role === 'ADMIN') {
+          navigate('/admin', { replace: true })
+        } else if (data.usuario?.role === 'FUNCIONARIO') {
+          navigate('/admin/pedidos', { replace: true })
+        } else {
+          navigate('/', { replace: true })
+        }
       } else {
         toast.error('E-mail ou senha incorretos.')
       }

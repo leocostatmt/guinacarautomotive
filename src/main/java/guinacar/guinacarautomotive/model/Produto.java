@@ -67,6 +67,12 @@ public class Produto {
     @Column(length = 500)
     private String image;
 
+    @ElementCollection
+    @CollectionTable(name = "produto_imagens", joinColumns = @JoinColumn(name = "produto_id"))
+    @OrderColumn(name = "posicao")
+    @Column(name = "url", length = 500, nullable = false)
+    private List<String> images = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria category;
@@ -183,6 +189,14 @@ public class Produto {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public List<String> getImages() {
+        return images;
+    }
+
+    public void setImages(List<String> images) {
+        this.images = images;
     }
 
     public Categoria getCategory() {

@@ -12,4 +12,6 @@ public interface FavoritoRepository extends JpaRepository<Favorito, Long> {
     boolean existsByUsuarioIdAndProdutoSlug(Long usuarioId, String produtoSlug);
 
     void deleteByUsuarioIdAndProdutoSlug(Long usuarioId, String produtoSlug);
+
+    void deleteByUsuarioId(Long usuarioId);
 }

@@ -1,19 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import Breadcrumb from '../components/Breadcrumb'
 import ProductCard from '../components/ProductCard'
 import ProductCardSkeleton from '../components/ProductCardSkeleton'
 import { FaArrowLeft } from 'react-icons/fa'
-import { products } from '../data/products'
+import { fetchCatalogProducts } from '../services/productsApi'
 import { categories } from '../data/categories'
 import { brands } from '../data/brands'
 import './Catalog.css'
 
-const PAGE_SIZE = 8
+const PAGE_SIZE = 12
 
 export default function Catalog() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const navigate = useNavigate()
@@ -24,8 +24,18 @@ export default function Catalog() {
   const sort = searchParams.get('ordenar') || ''
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 500)
-    return () => clearTimeout(t)
+    let active = true
+    setLoading(true)
+    fetchCatalogProducts()
+      .then((list) => {
+        if (active) setProducts(list)
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
+    return () => {
+      active = false
+    }
   }, [])
 
   useEffect(() => {
@@ -45,27 +55,28 @@ export default function Catalog() {
     if (term) {
       const q = term.toLowerCase()
       list = list.filter(
-        (p) => p.name.toLowerCase().includes(q) || p.manufacturer.toLowerCase().includes(q)
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.manufacturer.toLowerCase().includes(q) ||
+          (p.description && p.description.toLowerCase().includes(q))
       )
     }
     if (categoryFilter) list = list.filter((p) => p.category === categoryFilter)
-    if (brandFilter) list = list.filter((p) => p.vehicleBrands.includes(brandFilter))
+    if (brandFilter) list = list.filter((p) => (p.vehicleBrands || []).includes(brandFilter))
 
     if (sort === 'menor-preco') list.sort((a, b) => a.price - b.price)
     if (sort === 'maior-preco') list.sort((a, b) => b.price - a.price)
 
     return list
-  }, [term, categoryFilter, brandFilter, sort])
+  }, [products, term, categoryFilter, brandFilter, sort])
 
   const visible = filtered.slice(0, visibleCount)
 
   return (
     <div className="page">
       <div className="container page-section">
-
-        {/* BOTÃO DE VOLTAR ADICIONADO AQUI */}
         <button className="btn-voltar" onClick={() => navigate(-1)} aria-label="Voltar para a página anterior">
-          <FaArrowLeft/> Voltar
+          <FaArrowLeft /> Voltar
         </button>
 
         <Breadcrumb items={[{ label: 'Catálogo' }]} />
@@ -107,7 +118,7 @@ export default function Catalog() {
           <div className="form-field">
             <label htmlFor="ordenar">Ordenar por preço</label>
             <select id="ordenar" value={sort} onChange={(e) => updateParam('ordenar', e.target.value)}>
-              <option value="">Relevância</option>
+              <option value="">Mais recentes</option>
               <option value="menor-preco">Menor preço</option>
               <option value="maior-preco">Maior preço</option>
             </select>
@@ -118,7 +129,7 @@ export default function Catalog() {
 
         {loading ? (
           <div className="grid-auto">
-            {Array.from({ length: PAGE_SIZE }).map((_, i) => <ProductCardSkeleton key={i} />)}
+            {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
           </div>
         ) : filtered.length === 0 ? (
           <div className="catalog-empty panel">

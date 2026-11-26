@@ -80,6 +80,18 @@ public class Pedido {
     @Column(name = "prazo_entrega", length = 60)
     private String prazoEntrega;
 
+    @Column(name = "codigo_rastreio", length = 60)
+    private String codigoRastreio;
+
+    @Column(length = 80)
+    private String transportadora;
+
+    @Column(name = "enviado_em")
+    private LocalDateTime enviadoEm;
+
+    @Column(name = "entregue_em")
+    private LocalDateTime entregueEm;
+
     // ---- Dados de Pagamento ----
     @Enumerated(EnumType.STRING)
     @Column(name = "forma_pagamento", length = 25)
@@ -162,6 +174,14 @@ public class Pedido {
     public void setTipoEntrega(TipoEntrega tipoEntrega) { this.tipoEntrega = tipoEntrega; }
     public String getPrazoEntrega() { return prazoEntrega; }
     public void setPrazoEntrega(String prazoEntrega) { this.prazoEntrega = prazoEntrega; }
+    public String getCodigoRastreio() { return codigoRastreio; }
+    public void setCodigoRastreio(String codigoRastreio) { this.codigoRastreio = codigoRastreio; }
+    public String getTransportadora() { return transportadora; }
+    public void setTransportadora(String transportadora) { this.transportadora = transportadora; }
+    public LocalDateTime getEnviadoEm() { return enviadoEm; }
+    public void setEnviadoEm(LocalDateTime enviadoEm) { this.enviadoEm = enviadoEm; }
+    public LocalDateTime getEntregueEm() { return entregueEm; }
+    public void setEntregueEm(LocalDateTime entregueEm) { this.entregueEm = entregueEm; }
     public FormaPagamento getFormaPagamento() { return formaPagamento; }
     public void setFormaPagamento(FormaPagamento formaPagamento) { this.formaPagamento = formaPagamento; }
     public StatusPagamento getStatusPagamento() { return statusPagamento; }

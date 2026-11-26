@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { FaHeart, FaShoppingCart } from 'react-icons/fa'
@@ -5,13 +6,33 @@ import AccountLayout from '../components/AccountLayout'
 import ProductCard from '../components/ProductCard'
 import { useFavorites } from '../context/FavoritesContext'
 import { useCart } from '../context/CartContext'
-import { getProductById } from '../data/products'
+import { fetchCatalogProducts } from '../services/productsApi'
+import { getProductById as getStaticProductById } from '../data/products'
 
 export default function MyFavorites() {
   const { favoriteIds, loadingFavorites } = useFavorites()
   const { addToCart } = useCart()
+  const [catalog, setCatalog] = useState([])
+  const [loadingCatalog, setLoadingCatalog] = useState(true)
 
-  const favoriteProducts = favoriteIds.map(getProductById).filter(Boolean)
+  useEffect(() => {
+    let active = true
+    fetchCatalogProducts()
+      .then((list) => {
+        if (active) setCatalog(list)
+      })
+      .finally(() => {
+        if (active) setLoadingCatalog(false)
+      })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const byId = new Map(catalog.map((p) => [p.id, p]))
+  const favoriteProducts = favoriteIds
+    .map((id) => byId.get(id) || getStaticProductById(id))
+    .filter(Boolean)
 
   const handleAddAllToCart = () => {
     favoriteProducts.forEach((product) => addToCart(product, 1))
@@ -25,7 +46,7 @@ export default function MyFavorites() {
       subtitle="Salve as peças do seu interesse para comparar especificações ou comprar quando precisar."
       breadcrumbLabel="Meus Favoritos"
     >
-      {loadingFavorites && favoriteProducts.length === 0 ? (
+      {(loadingFavorites || loadingCatalog) && favoriteProducts.length === 0 ? (
         <div className="favorites-grid">
           <div className="skeleton" style={{ height: 320 }} />
           <div className="skeleton" style={{ height: 320 }} />
